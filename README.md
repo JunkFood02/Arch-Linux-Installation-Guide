@@ -262,6 +262,191 @@ pacstrap /mnt base base-devel linux linux-firmware dhcpcd
 
 
 
-## 生成 Fstab
+## 生成 Fstab 文件
 
-生成（Generate）自动挂载分区的 `fstab` 文件（即系统文件表File System Table）
+生成（Generate）自动挂载分区的 `fstab` 文件（即系统文件表 File System Table）
+
+```
+genfstab -L /mnt >> /mnt/etc/fstab
+```
+
+由于这步比较重要，所以我们需要输出生成的文件来检查是否正确，执行以下命令：
+
+```
+cat /mnt/etc/fstab
+```
+
+如果前面的挂载操作没有出错，应该输出且 **仅输出** 两条记录：（以你的磁盘分区情况为准）
+
+`/` 被挂载到了此前建立的 **数据分区** `/dev/nvme0n1p5` 
+`/boot` 被挂载到了 **硬盘已有的 EFI 系统分区** `/dev/nvme0n1p1` 
+
+如果 `fstab` 文件有任何错误，请先删除该文件。
+
+```
+rm -rf /mnt/etc/fstab
+```
+
+检查前面的挂载操作有没有出错，`umount` 之后再重新挂载、生成。
+
+
+
+## 新系统的必要配置
+
+> 这里的配置流程虽然有些繁琐，但不会像前面的操作一样容易出错。
+>
+
+### Chroot
+
+`Chroot` 意为 `Change root` ，相当于把操纵权交给我们新安装（或已经存在）的 `Linux` 系统，**执行了这步以后，我们的操作都相当于在磁盘上新装的系统中进行**。
+
+执行如下命令：
+
+```
+arch-chroot /mnt
+```
+
+顺带一提，如果以后系统出现了问题，只要插入任意一个安装有 Arch Linux 镜像的 U 盘并启动，将我们的系统根分区挂载到 `/mnt` 下、EFI 系统分区挂载到 `/mnt/boot` 下，再通过这条命令就可以进入我们的系统进行修复操作。
+
+
+
+### 安装必要软件包
+
+打开 `pacman` 设置，启用 `pacman` 的并行下载功能，加速下载，事半功倍。
+
+```
+vim /etc/pacman.conf
+```
+
+找到 `ParallelDownloads = 5` 这一行并取消其注释，可以将 `5` 调整为你想要的数值。
+
+目前，系统根目录已经从 U 盘切换到了硬盘中，需要安装一些必需的软件包
+
+```
+pacman -S vim dialog wpa_supplicant ntfs-3g networkmanager netctl
+```
+
+遇到需要选择的场合一路回车选择默认项即可。
+
+
+
+### 设置时区、地区与语言信息
+
+依次执行如下命令设置我们的时区为上海，并生成相关文件
+
+```
+ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+hwclock --systohc
+```
+
+
+
+执行如下命令，设置我们使用的语言选项
+
+```
+vim /etc/locale.gen
+```
+
+在文件中找到 `en_US.UTF-8 UTF-8`、`zh_CN.UTF-8 UTF-8` 、`zh_HK.UTF-8 UTF-8` 及 `zh_TW.UTF-8 UTF-8`  这四行，去掉行首的 # 号，保存并退出。
+
+执行如下命令，系统会生成我们需要的本地化文件
+
+```
+locale-gen
+```
+
+
+
+打开（不存在时会创建）`/etc/locale.conf`文件：
+
+```
+vim /etc/locale.conf
+```
+
+在文件的第一行加入以下内容
+
+```
+LANG=en_US.UTF-8
+```
+
+保存并退出
+
+
+
+### 设置主机名
+
+打开（不存在时会创建）`/etc/hostname` 文件：
+
+```
+vim /etc/hostname
+```
+
+在文件的第一行输入你自己设定的一个 `myhostname`，这将会是你的 **计算机名**，保存并退出。
+
+
+
+打开（不存在时会创建）`/etc/hosts` 文件：
+
+```
+vim /etc/hosts
+```
+
+在文件末添加如下内容（将 `myhostname` 替换成你自己设定的主机名），保存并退出。
+
+```
+127.0.0.1	localhost
+::1			localhost
+127.0.1.1	myhostname.localdomain	myhostname
+```
+
+
+
+### 设置 Root 密码
+
+`root` 账户是 `Linux` 系统中的最高权限账户，需要设置密码保护起来，以免无意间实施了破坏性的敏感操作。
+
+```
+passwd
+```
+
+
+
+### 安装处理器微码
+
+显然你应该根据你电脑的 CPU 型号选取一个包进行安装
+
+```
+pacman -S intel-ucode
+pacman -S amd-ucode
+```
+
+
+
+## 配置系统引导
+
+此处使用 `grub` 进行系统引导，先安装必要的包
+
+```
+pacman -S os-prober ntfs-3g grub efibootmgr
+```
+
+部署 `grub`
+
+```
+grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=grub
+```
+
+生成配置文件
+
+```
+grub-mkconfig -o /boot/grub/grub.cfg
+```
+
+检查文件末尾的 `menuenrtry` 是否有 Arch Linux 入口
+
+```
+vim /boot/grub/grub.cfg
+```
+
+若有任何报错请查阅 Arch Wiki、教程或自行搜索。
+
