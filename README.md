@@ -1,8 +1,11 @@
 # Arch Linux 安装简明流程
 
-这是一篇为 GPT/EFI 引导的电脑安装 Arch Linux（双系统）的中文简明流程，尽可能省略了可以省略的流程与文字以使得篇幅尽量短小，基本上基于 [Arch Wiki](https://wiki.archlinux.org/title/installation_guide) 以及这篇 [优秀的安装教程](https://www.viseator.com/2017/05/17/arch_install/)，特此表示感谢。
+这是一篇为 **GPT/EFI 引导** 的电脑安装 Arch Linux（双系统）的中文简明流程，尽可能省略了可以省略的流程与文字以使得篇幅尽量短小，基本上基于 [Arch Wiki Installation guide](https://wiki.archlinux.org/title/installation_guide) 以及由联创团队 Android 组学长的这篇 [优秀的安装教程](https://www.viseator.com/2017/05/17/arch_install/)，特此表示感谢。
 
 本文严格按照操作顺序进行编写，还请认真阅读每一步操作的说明以及注意事项。
+
+> 说明：下文中所指教程均指此篇教程: [以官方Wiki的方式安装ArchLinux](https://viseator.github.io/2017/05/17/arch_install/)。
+>
 
 ## 安装前准备
 
@@ -26,10 +29,12 @@
 
 ### 磁盘分区
 
-此处默认你使用 Windows 系统，其他情况请自行搜索。
+此处默认 Arch Linux 与原系统安装在同一块硬盘上，其他情况请查阅 Arch Wiki、[教程](https://www.viseator.com/2017/05/17/arch_install/) 或自行搜索。
 
 1. 使用 Windows 自带的磁盘管理，你可以直接在开始菜单中搜索找到它，或者右键单击计算机，选择管理。
+
 2. **压缩** 有空余空间的磁盘分区，分配一块空间给 Arch Linux，越多越好，最小不要小于 60G。
+
 3. 在压缩后的空闲空间新建一个简单卷（分区），卷标分配与格式化与否无所谓。
 
 > 说明：你也可以在进入 Arch Linux 安装程序后进行这一步。
