@@ -7,6 +7,9 @@
 > 说明：下文中所指教程均指此篇教程: [以官方Wiki的方式安装ArchLinux](https://viseator.github.io/2017/05/17/arch_install/)。
 
 
+[TOC]
+
+
 
 ## 安装前准备
 
@@ -30,7 +33,7 @@
 
 ### 磁盘分区
 
-> **重要提示：**如果你的 Windows 电脑为磁盘加上了 **Bitlocker 锁**，请务必解除后再进行任何磁盘操作，否则会为你带来巨大的不幸。
+> 重要提示：如果你的 Windows 电脑为磁盘加上了 **Bitlocker 锁**，请务必解除后再进行任何磁盘操作，否则会为你带来巨大的不幸。
 
 此处默认 Arch Linux 与原系统安装在同一块硬盘上，如果你需要在一块新硬盘上安装，你还需要确定新硬盘的分区表为 GPT 格式，并新建一个 EFI 分区。具体的其他情况请查阅 Arch Wiki、[教程](https://www.viseator.com/2017/05/17/arch_install/) 或自行搜索。
 
@@ -48,9 +51,7 @@
 各品牌 BIOS 设置界面各自不同，但需要做的事情大同小异。
 
 1. 关闭 `Secure Boot`，Arch Linux 安装程序无法使用 `Secure Boot` 启动，你可以在完成安装之后再启用此功能。
-
 2. 某些品牌（如戴尔）的电脑可能不会在其他系统中默认开启网卡，需要在设置中启用  `Enable UEFI Network Stack`。
-
 3. 调整 BIOS 默认的启动顺序（`Boot Sequence` / `Boot Order`），检查是否有装载有 Arch Linux 的 U 盘，将其顺序调整到第一位（你也可以在计算机启动时手动进入启动菜单选择要启动的系统），保存 BIOS 设置并退出。
 
    > 说明：如果在这里找不到你的 U 盘（设备名形如 `ARCH_202204` ），说明可能你的设备开启了 `Secure Boot` 导致 BIOS 无法找到系统入口，保存 BIOS 设置退出后重新进行这一步即可。
@@ -323,7 +324,7 @@ vim /etc/pacman.conf
 目前，系统根目录已经从 U 盘切换到了硬盘中，需要安装一些必需的软件包
 
 ```
-pacman -S vim dialog wpa_supplicant ntfs-3g networkmanager netctl
+pacman -S vim dialog wpa_supplicant ntfs-3g networkmanager netctl sudo
 ```
 
 遇到需要选择的场合一路回车选择默认项即可。
@@ -395,7 +396,7 @@ vim /etc/hosts
 
 ```
 127.0.0.1	localhost
-::1			localhost
+::1		localhost
 127.0.1.1	myhostname.localdomain	myhostname
 ```
 
@@ -457,7 +458,7 @@ vim /boot/grub/grub.cfg
 交换文件可以在物理内存不足的时候将部分内存暂存到交换文件中，避免系统由于内存不足而完全停止工作。之前通常采用单独一个分区的方式作为交换分区，现在更推荐采用交换文件的方式，更便于我们的管理。分配一块空间用于交换文件，执行：
 
 ```
-dd if=/dev/zero of=/swapfile bs=1M count=4096 status=progress
+dd if=/dev/zero of=/swapfile bs=1M count=8192 status=progress
 ```
 
 将 `8192` 换成需要的大小，单位 Mb，一般与计算机 RAM 大小一致即可。
@@ -491,3 +492,70 @@ vim /etc/fstab
 ```
 /swapfile none swap defaults 0 0
 ```
+
+
+
+## 新建用户与配置 sudo
+
+> 关于这一步操作的说明，可以查看 [教程](https://www.viseator.com/2017/05/19/arch_setup/#%E6%96%B0%E5%BB%BA%E7%94%A8%E6%88%B7)
+
+请自行替换 `username` 为你想要使用的用户名
+
+```
+useradd -m -G wheel username
+```
+
+```
+passwd username
+```
+
+为了在普通用户下使用 root 操作，需要配置 sudoers
+
+```
+vim /etc/sudoers
+```
+
+找到 `# %wheel ALL=(ALL)ALL`，取消注释并保存退出。
+
+
+
+## 安装图形界面
+
+> 再次提醒，你应当开启 `pacman` 的并行下载功能
+>
+> 遇到需要选择的场合一路回车选择默认项即可
+>
+
+安装 Xorg 图形服务
+
+```
+sudo pacman -S xorg
+```
+
+安装 KDE Plasma
+
+```
+sudo pacman -S plasma kde-applications
+```
+
+安装桌面管理器 sddm
+
+```
+sudo pacman -S sddm
+```
+
+设置 sddm 开机启动
+
+```
+sudo systemctl enable sddm
+```
+
+启用适用于桌面环境的网络服务 `NetworkManager`
+
+```
+sudo systemctl disable netctl
+sudo systemctl enable NetworkManager
+```
+
+
+
