@@ -7,9 +7,6 @@
 > 说明：下文中所指教程均指此篇教程: [以官方Wiki的方式安装ArchLinux](https://viseator.github.io/2017/05/17/arch_install/)。
 
 
-[TOC]
-
-
 
 ## 安装前准备
 
@@ -18,6 +15,8 @@
 3. 稳定，而不需要额外进行设备认证的有线/无线网络连接，如手机热点等。
 4. 至少 3 小时~~或长达数星期~~的时间。
 5. 基本的搜索引擎使用能力以及英语阅读能力。
+
+
 
 
 
@@ -44,6 +43,8 @@
 
 
 
+
+
 ## BIOS 设置
 
 不同品牌的电脑/主板进入 BIOS 设置的方法不一样，联想以及戴尔是在 **按下开机键出现品牌徽标时** 按 F2（或 Fn+F2），启动菜单是按下 F12，其他品牌请自行搜索。
@@ -59,9 +60,13 @@
 
 
 
+
+
 ## 开始安装 Arch Linux
 
 完成了 BIOS 的设置后，重启计算机，我们应该进入到了 Arch Linux 的界面，选择第一个进入安装程序即可进入 `zsh` 命令行界面。
+
+
 
 
 
@@ -115,6 +120,8 @@ ping www.baidu.com
 
 
 
+
+
 ### 连接无线网络
 
 执行以下命令
@@ -157,6 +164,8 @@ ping www.baidu.com
 
 > 使用 `Ctrl+C` 中止当前正在执行的命令
 
+> 提示：可以使用方向键的上、下键来查看曾经执行过的指令的历史记录
+
 
 
 ### 设置系统时间
@@ -166,6 +175,8 @@ timedatectl set-ntp true
 ```
 
 操作成功无提示
+
+
 
 
 
@@ -185,10 +196,10 @@ timedatectl set-ntp true
 fdisk -l
 ```
 
-找到 **EFI System 分区** 以及刚刚在 Windows 下建立的 **新分区** ，**记下这两个分区的路径**（形如 `/dev/` 与 `/dev/nvme0n1p5`）。EFI 系统分区一般大小为 300-500M 不等。
+找到 **EFI System 分区** 以及刚刚在 Windows 下建立的 **新分区** ，**记下这两个分区的路径**（形如 `/dev/nvme0n1p1` 与 `/dev/nvme0n1p5`）。EFI 系统分区一般大小为 300-500M 不等。
 
 > 再次提示：单次或多次按下 `Tab` 可以补全或选择可能的选项，免去输入校对之苦。
-> 部分电脑蜂鸣器会在 `Tab` 无法补全时发出刺耳的提示声，使用 `rmmod pcspkr` 移除
+> 部分电脑蜂鸣器会在 `Tab` 无法补全时发出刺耳的提示声，使用 `rmmod pcspkr` 移除。
 
 格式化刚刚在Windows下新建的 **数据分区（替换为你自己的路径）**
 
@@ -216,6 +227,8 @@ mount /dev/nvme0n1p1 /mnt/boot
 ```
 mount
 ```
+
+
 
 
 
@@ -267,6 +280,8 @@ pacstrap /mnt base base-devel linux linux-firmware dhcpcd
 
 
 
+
+
 ## 生成 Fstab 文件
 
 生成（Generate）自动挂载分区的 `fstab` 文件（即文件系统表 File System Table）
@@ -283,8 +298,11 @@ cat /mnt/etc/fstab
 
 如果前面的挂载操作没有出错，应该输出且 **仅输出** 两条记录：（以你的磁盘分区情况为准）
 
-`/` 被挂载到了此前建立的 **数据分区** `/dev/nvme0n1p5` 
-`/boot` 被挂载到了 **硬盘已有的 EFI 系统分区** `/dev/nvme0n1p1` 
+- 根分区 `/` 被挂载到了此前建立的 **数据分区** `/dev/nvme0n1p5` 
+
+
+- 引导分区 `/boot` 被挂载到了 **硬盘已有的 EFI 系统分区** `/dev/nvme0n1p1` 
+
 
 如果 `fstab` 文件有任何错误，请先删除该文件。
 
@@ -293,6 +311,8 @@ rm -rf /mnt/etc/fstab
 ```
 
 检查前面的挂载操作有没有出错，`umount` 之后再重新挂载、生成。
+
+
 
 
 
@@ -442,7 +462,8 @@ vim /etc/sudoers
 
 找到 `# %wheel ALL=(ALL)ALL`，取消注释并保存退出。
 
-
+> 或许有的人已经发现 Arch Wiki 和一些其他教程资料中的命令是以 `#` 或 `$` 开头的，这两个符号就对应着命令行中的命令提示符，`#` 代表以 `Root` 用户执行命令，`$` 代表以普通用户执行命令，平时使用教程中的命令时应该注意这一点。
+>
 
 
 
@@ -454,6 +475,8 @@ vim /etc/sudoers
 pacman -S intel-ucode
 pacman -S amd-ucode
 ```
+
+
 
 
 
@@ -484,6 +507,8 @@ vim /boot/grub/grub.cfg
 ```
 
 若有任何报错请查阅 Arch Wiki、教程或自行搜索。
+
+
 
 
 
@@ -526,6 +551,8 @@ vim /etc/fstab
 ```
 /swapfile none swap defaults 0 0
 ```
+
+
 
 
 
