@@ -185,7 +185,7 @@ timedatectl set-ntp true
 fdisk -l
 ```
 
-找到 **EFI System 分区**以及刚刚在 Windows 下建立的 **新分区** ，**记下这两个分区的路径**（形如 `/dev/` 与 `/dev/nvme0n1p5`）。EFI 系统分区一般大小为 300-500M 不等。
+找到 **EFI System 分区** 以及刚刚在 Windows 下建立的 **新分区** ，**记下这两个分区的路径**（形如 `/dev/` 与 `/dev/nvme0n1p5`）。EFI 系统分区一般大小为 300-500M 不等。
 
 > 再次提示：单次或多次按下 `Tab` 可以补全或选择可能的选项，免去输入校对之苦。
 > 部分电脑蜂鸣器会在 `Tab` 无法补全时发出刺耳的提示声，使用 `rmmod pcspkr` 移除
@@ -233,11 +233,15 @@ reflector --country China --sort rate --latest 5 --save /etc/pacman.d/mirrorlist
 
 
 
+
+
 ### 学习 Vim 的使用
 
 休息一下，接下来我们的所有文字编辑命令都需要使用 `Vim`。推荐使用以下的链接进行学习，只需要掌握第一等级即可：
 
 > [简明 VIM 练级攻略](https://coolshell.cn/articles/5426.html)
+
+
 
 
 
@@ -265,7 +269,7 @@ pacstrap /mnt base base-devel linux linux-firmware dhcpcd
 
 ## 生成 Fstab 文件
 
-生成（Generate）自动挂载分区的 `fstab` 文件（即系统文件表 File System Table）
+生成（Generate）自动挂载分区的 `fstab` 文件（即文件系统表 File System Table）
 
 ```
 genfstab -L /mnt >> /mnt/etc/fstab
@@ -324,7 +328,7 @@ vim /etc/pacman.conf
 目前，系统根目录已经从 U 盘切换到了硬盘中，需要安装一些必需的软件包
 
 ```
-pacman -S vim dialog wpa_supplicant ntfs-3g networkmanager netctl sudo
+pacman -S vim dialog wpa_supplicant ntfs-3g networkmanager netctl
 ```
 
 遇到需要选择的场合一路回车选择默认项即可。
@@ -412,6 +416,36 @@ passwd
 
 
 
+### 新建用户与配置 sudo
+
+> 关于这一步操作的说明，可以查看 [教程](https://www.viseator.com/2017/05/19/arch_setup/#%E6%96%B0%E5%BB%BA%E7%94%A8%E6%88%B7)
+
+请自行替换 `username` 为你想要使用的用户名
+
+```
+useradd -m -G wheel username
+```
+
+```
+passwd username
+```
+
+为了在普通用户下使用 root 操作，需要配置 sudo
+
+```
+pacman -S sudo
+```
+
+```
+vim /etc/sudoers
+```
+
+找到 `# %wheel ALL=(ALL)ALL`，取消注释并保存退出。
+
+
+
+
+
 ### 安装处理器微码
 
 显然你应该根据你电脑的 CPU 型号选取一个包进行安装
@@ -492,30 +526,6 @@ vim /etc/fstab
 ```
 /swapfile none swap defaults 0 0
 ```
-
-
-
-## 新建用户与配置 sudo
-
-> 关于这一步操作的说明，可以查看 [教程](https://www.viseator.com/2017/05/19/arch_setup/#%E6%96%B0%E5%BB%BA%E7%94%A8%E6%88%B7)
-
-请自行替换 `username` 为你想要使用的用户名
-
-```
-useradd -m -G wheel username
-```
-
-```
-passwd username
-```
-
-为了在普通用户下使用 root 操作，需要配置 sudoers
-
-```
-vim /etc/sudoers
-```
-
-找到 `# %wheel ALL=(ALL)ALL`，取消注释并保存退出。
 
 
 
