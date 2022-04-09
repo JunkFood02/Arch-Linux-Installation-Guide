@@ -184,7 +184,7 @@ timedatectl set-ntp true
 fdisk -l
 ```
 
-找到 **EFI System 分区**以及刚刚在 Windows 下建立的 **新分区** ，**记下这两个分区的路径**（形如 `/dev/` 与 `/dev/nvme0n1p5`）。EFI 系统分区一般大小为 200-500M 不等。
+找到 **EFI System 分区**以及刚刚在 Windows 下建立的 **新分区** ，**记下这两个分区的路径**（形如 `/dev/` 与 `/dev/nvme0n1p5`）。EFI 系统分区一般大小为 300-500M 不等。
 
 > 再次提示：单次或多次按下 `Tab` 可以补全或选择可能的选项，免去输入校对之苦。
 > 部分电脑蜂鸣器会在 `Tab` 无法补全时发出刺耳的提示声，使用 `rmmod pcspkr` 移除
@@ -450,3 +450,44 @@ vim /boot/grub/grub.cfg
 
 若有任何报错请查阅 Arch Wiki、教程或自行搜索。
 
+
+
+## 创建交换文件
+
+交换文件可以在物理内存不足的时候将部分内存暂存到交换文件中，避免系统由于内存不足而完全停止工作。之前通常采用单独一个分区的方式作为交换分区，现在更推荐采用交换文件的方式，更便于我们的管理。分配一块空间用于交换文件，执行：
+
+```
+dd if=/dev/zero of=/swapfile bs=1M count=4096 status=progress
+```
+
+将 `8192` 换成需要的大小，单位 Mb，一般与计算机 RAM 大小一致即可。
+
+更改权限，执行：
+
+```
+chmod 600 /swapfile
+```
+
+设置交换文件，执行：
+
+```
+mkswap /swapfile
+```
+
+启用交换文件，执行：
+
+```
+swapon /swapfile
+```
+
+最后我们需要编辑 `/etc/fstab` 为交换文件设置一个入口，使用 `Vim` 打开文件：
+
+```
+vim /etc/fstab
+```
+
+**注意编辑 `fstab` 文件的时候要格外注意不要修改之前的内容，直接在最后新起一行加入以下内容**：
+
+```
+/swapfile none swap defaults 0 0
+```
