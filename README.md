@@ -15,6 +15,7 @@
 3. 稳定，而不需要额外进行设备认证的有线/无线网络连接，如手机热点等。
 4. 至少 3 小时~~或长达数星期~~的时间。
 5. 基本的搜索引擎使用能力以及英语阅读能力。
+5. 折腾精神，以及一颗面对多次系统崩溃而不会随之崩溃的强大的心
 
 
 
@@ -34,12 +35,11 @@
 
 > 重要提示：如果你的 Windows 电脑为磁盘加上了 **Bitlocker 锁**，请务必解除后再进行任何磁盘操作，否则会为你带来巨大的不幸。
 
-此处默认 Arch Linux 与原系统安装在同一块硬盘上，如果你需要在一块新硬盘上安装，你还需要确定新硬盘的分区表为 GPT 格式，并新建一个 EFI 分区。具体的其他情况请查阅 Arch Wiki、[教程](https://www.viseator.com/2017/05/17/arch_install/) 或自行搜索。
+此处默认 Arch Linux 与原系统安装在同一块硬盘上，如果你需要在一块新硬盘上安装，你还需要确定或转换新硬盘的分区表为 GPT 格式，并新建一个 EFI 分区。具体的其他情况请查阅 Arch Wiki、[教程](https://www.viseator.com/2017/05/17/arch_install/) 或自行搜索。
 
 1. 使用 Windows 自带的磁盘管理，你可以直接在开始菜单中搜索找到它，或者右键单击计算机，选择管理。
 2. **压缩** 有空余空间的磁盘分区，分配一块空间给 Arch Linux，越多越好，最小不要小于 60G。
-3. 在压缩后的空闲空间新建一个简单卷（分区），卷标分配与格式化与否无所谓。
-> 说明：你也可以在进入 Arch Linux 安装程序后进行这一步。
+3. **不要** 在这里新建一个新分区，而是在进入 Arch Linux 安装程序后再进行这一步。
 
 
 
@@ -182,9 +182,23 @@ timedatectl set-ntp true
 
 ## 分区的格式化与挂载
 
-> 警告：除非你清楚你自己在做什么，否则请不要对硬盘分区表、以及除前文新建的分区之外的分区进行任何操作，并且请多次检查自己有没有输错命令，以防对其他分区的数据产生影响。
+> 警告：除非你清楚你自己在做什么，否则请不要对硬盘分区表、以及除自己新建的分区之外的分区进行任何操作，并且请多次检查自己有没有输错命令，以防对其他分区的数据产生影响。
 >
 > 换而言之，只要你不对其他分区（Windows 相关分区）进行任何操作，就不需要担心有任何数据丢失的风险。
+
+### 新建数据分区
+
+列出当前所有设备与分区
+
+```
+fdisk -l
+```
+
+选择进入即将安装 Arch Linux 的硬盘，形如 `/dev/nvme0n1`（请以自己的设备情况为准）
+
+```
+fdisk /dev/nvme0n1
+```
 
 
 
@@ -196,7 +210,7 @@ timedatectl set-ntp true
 fdisk -l
 ```
 
-找到 **EFI System 分区** 以及刚刚在 Windows 下建立的 **新分区** ，**记下这两个分区的路径**（形如 `/dev/nvme0n1p1` 与 `/dev/nvme0n1p5`）。EFI 系统分区一般大小为 300-500M 不等。
+找到 **EFI System 分区** 以及刚刚建立的 **Linux Filesystem 新分区** ，**记下这两个分区的路径**（形如 `/dev/nvme0n1p1` 与 `/dev/nvme0n1p5`）。EFI 系统分区一般大小为 300-500M 不等。
 
 > 再次提示：单次或多次按下 `Tab` 可以补全或选择可能的选项，免去输入校对之苦。
 > 部分电脑蜂鸣器会在 `Tab` 无法补全时发出刺耳的提示声，使用 `rmmod pcspkr` 移除。
@@ -273,7 +287,7 @@ vim /etc/pacman.conf
 执行以下命令，安装 Arch Linux 所需要的基本包
 
 ```
-pacstrap /mnt base base-devel linux linux-firmware dhcpcd
+pacstrap /mnt base base-devel linux linux-firmware dhcpcd vim
 ```
 
 遇到需要选择的场合一路回车选择默认项即可。
@@ -345,10 +359,24 @@ vim /etc/pacman.conf
 
 找到 `ParallelDownloads = 5` 这一行并取消其注释，可以将 `5` 调整为你想要的数值。
 
+
+
+运行命令以配置 `pacman` 所使用的镜像源，`Reflector` 会自动帮我们配置位于 China 的下载速度最快的镜像源
+
+```
+reflector --country China --sort rate --latest 5 --save /etc/pacman.d/mirrorlist
+```
+
+可能会报 `WARNING` 但无需理会
+
+> 你可能会发现，此处对 pacman 进行的操作似曾相识。这是由于之前我们进行配置的对象是 U 盘系统之中的 pacman，在 chroot 到新的系统后需要重新配置
+
+
+
 目前，系统根目录已经从 U 盘切换到了硬盘中，需要安装一些必需的软件包
 
 ```
-pacman -S vim dialog wpa_supplicant ntfs-3g networkmanager netctl
+pacman -S dialog wpa_supplicant ntfs-3g networkmanager netctl
 ```
 
 遇到需要选择的场合一路回车选择默认项即可。
@@ -566,32 +594,32 @@ vim /etc/fstab
 安装 Xorg 图形服务
 
 ```
-sudo pacman -S xorg
+pacman -S xorg
 ```
 
 安装 KDE Plasma
 
 ```
-sudo pacman -S plasma kde-applications
+pacman -S plasma kde-applications
 ```
 
 安装桌面管理器 sddm
 
 ```
-sudo pacman -S sddm
+pacman -S sddm
 ```
 
 设置 sddm 开机启动
 
 ```
-sudo systemctl enable sddm
+systemctl enable sddm
 ```
 
 启用适用于桌面环境的网络服务 `NetworkManager`
 
 ```
-sudo systemctl disable netctl
-sudo systemctl enable NetworkManager
+systemctl disable netctl
+systemctl enable NetworkManager
 ```
 
 
