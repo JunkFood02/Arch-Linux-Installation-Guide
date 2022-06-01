@@ -76,29 +76,6 @@
 
 
 
-### 事前故障排除
-
-解除可能出现的软硬件 block
-
-
-```shell
-rfkill unblock all
-```
-
-列出当前网络设备
-
-```shell
-ip link show
-```
-
-一般而言，无线网卡的名字默认为 `wlan0`，检查其状态，若为 `DOWN` 还需设置为 `UP`，*wlan0* 请替换成此处显示的网卡名
-
-```
-ip link set wlan0 up
-```
-
-
-
 ### 连接有线网络
 
 不同型号的无线网卡的支持情况不同，若有条件推荐优先使用有线网网络进行连接，可以直接使用 USB 线将手机连接电脑使用手机的数据网络。
@@ -123,6 +100,31 @@ ping www.baidu.com
 
 
 ### 连接无线网络
+
+
+
+#### 事前故障排除
+
+解除可能出现的软硬件 block
+
+
+```shell
+rfkill unblock all
+```
+
+列出当前网络设备
+
+```shell
+ip link show
+```
+
+一般而言，无线网卡的名字默认为 `wlan0`，检查其状态，若为 `DOWN` 还需设置为 `UP`，*wlan0* 请替换成此处显示的网卡名
+
+```
+ip link set wlan0 up
+```
+
+
 
 执行以下命令
 
@@ -186,6 +188,44 @@ timedatectl set-ntp true
 >
 > 换而言之，只要你不对其他分区（Windows 相关分区）进行任何操作，就不需要担心有任何数据丢失的风险。
 
+
+
+### 新建 EFI 系统分区
+
+如果你在一块 **新硬盘** 上安装 Arch Linux，则需要为其新建一个 EFI 系统分区
+
+如果你在一块已经安装有 Windows 的硬盘上安装 Arch Linux，则 **跳过这一步**
+
+
+
+列出当前所有设备与分区
+
+```
+fdisk -l
+```
+
+选择进入即将安装 Arch Linux 的硬盘，形如 `/dev/nvme0n1`（请以自己的设备情况为准）
+
+```
+fdisk /dev/nvme0n1
+```
+
+使用 `F` 列出当前的未分配空间（即在 Windows 下分配出的空间）
+
+使用 `n` 在未分配空间新建分区，分区号与起始扇区默认即可，终止扇区输入 `+500M`，即给该新分区分配 500M 空间
+
+新建完成后使用 `t`，选中该分区后将该分区标记为 `EFI System` 分区，使用 `L` 可以找到 EFI System 分区类型标号，如无意外应该是 `1`
+
+`w` 保存并退出
+
+格式化该分区，假设该分区名为 `/dev/nvme0n1p1`
+
+```
+mkfs.fat -F32 /dev/nvme0n1p1
+```
+
+
+
 ### 新建数据分区
 
 列出当前所有设备与分区
@@ -204,7 +244,7 @@ fdisk /dev/nvme0n1
 
 使用 `n` 在未分配空间新建分区，如无意外全部默认即可
 
-`wq` 保存并退出
+`w` 保存并退出
 
 
 
@@ -221,7 +261,7 @@ fdisk -l
 > 再次提示：单次或多次按下 `Tab` 可以补全或选择可能的选项，免去输入校对之苦。
 > 部分电脑蜂鸣器会在 `Tab` 无法补全时发出刺耳的提示声，使用 `rmmod pcspkr` 移除。
 
-格式化刚刚在Windows下新建的 **数据分区（替换为你自己的路径）**
+格式化刚刚在新建的 **数据分区（替换为你自己的路径）**
 
 ```shell
 mkfs.ext4 /dev/nvme0n1p5
@@ -293,12 +333,10 @@ vim /etc/pacman.conf
 执行以下命令，安装 Arch Linux 所需要的基本包
 
 ```
-pacstrap /mnt base base-devel linux linux-firmware dhcpcd vim
+pacstrap /mnt base base-devel linux linux-firmware dhcpcd vim reflector
 ```
 
 遇到需要选择的场合一路回车选择默认项即可。
-
-
 
 
 
@@ -318,13 +356,13 @@ cat /mnt/etc/fstab
 
 如果前面的挂载操作没有出错，应该输出且 **仅输出** 两条记录：（以你的磁盘分区情况为准）
 
-- 根分区 `/` 被挂载到了此前建立的 **数据分区** `/dev/nvme0n1p5` 
+- 根分区 `/` 被挂载到了此前建立的 **数据分区** `/dev/nvme0n1p5`，分区的文件系统为 `ext4`
 
 
-- 引导分区 `/boot` 被挂载到了 **硬盘已有的 EFI 系统分区** `/dev/nvme0n1p1` 
+- 引导分区 `/boot` 被挂载到了 **硬盘已有的 EFI 系统分区** `/dev/nvme0n1p1`，分区的文件系统为 `vfat`
 
 
-如果 `fstab` 文件有任何错误，请先删除该文件。
+如果 `fstab` 文件有任何错误，请先删除该文件
 
 ```
 rm -rf /mnt/etc/fstab
@@ -382,10 +420,10 @@ reflector --country China --sort rate --latest 5 --save /etc/pacman.d/mirrorlist
 目前，系统根目录已经从 U 盘切换到了硬盘中，需要安装一些必需的软件包
 
 ```
-pacman -S dialog wpa_supplicant ntfs-3g networkmanager netctl
+pacman -S dialog wpa_supplicant ntfs-3g networkmanager netctl git
 ```
 
-遇到需要选择的场合一路回车选择默认项即可。
+遇到需要选择的场合一路回车选择默认项即可。clash for windows
 
 
 
@@ -540,7 +578,7 @@ grub-mkconfig -o /boot/grub/grub.cfg
 vim /boot/grub/grub.cfg
 ```
 
-若有任何报错请查阅 Arch Wiki、教程或自行搜索。
+若有任何报错请查阅 Arch Wiki、教程或自行搜索
 
 
 
@@ -628,5 +666,194 @@ systemctl disable netctl
 systemctl enable NetworkManager
 ```
 
+reboot，进入图形界面
 
 
+
+## 安装后配置与提示
+
+### 社区支持
+
+Arch Linux 有完善的 Wiki 与活跃的社区支持，有任何问题先在 Wiki 内查找以及 Google 一下， 绝大部分问题都会找到解决方案
+
+
+
+### 滚动更新
+
+在使用之前，要了解 Arch Linux 使用的是激进的滚动更新策略，你的系统可以时刻保持并且也 **必须保持** 最新的内核版本与最新的软件版本。
+
+因此在你安装软件包的时候，`pacman` 的命令应当从简单的 *安装* 变为 **安装软件包+同步软件资料库+进行全面系统更新**，也就是说：
+
+```
+sudo pacman -S package-name
+```
+
+应当改为
+
+```
+sudo pacman -Syu package-name
+```
+
+
+
+### AUR helper: yay
+
+Arch Linux 除了官方源之外，还拥有广大社区用户维护的 **Arch 用户软件仓库**（Arch User Repository，简称 AUR）可供使用，极大丰富了 Arch Linux 的软件库，用户体验++
+
+安装可以让我们便捷安装 AUR 包的 `yay`
+
+```
+sudo pacman -Syu yay
+```
+
+
+
+### 代理配置
+
+如果你使用 clash 进行国际联网，可以直接下载方便使用的 [Clash for Windows](https://github.com/Fndroid/clash_for_windows_pkg)，解压后打开 `cfw` 即可
+
+- 在 `System Settings` 中搜索 `proxy`，手动将代理地址设置为 `127.0.0.1`，cfw 默认端口为 `7890`
+
+- 设置 `Git` 代理：
+
+  ```
+  git config --global http.proxy "http://127.0.0.1:7890"
+  ```
+
+- 设置终端代理：将 cfw 中的命令手动粘贴到终端中回车，但只在本次对话中生效
+
+  ```
+  export https_proxy=http://127.0.0.1:7890;
+  export http_proxy=http://127.0.0.1:7890;
+  export all_proxy=socks5://127.0.0.1:7890
+  ```
+
+
+
+### Code - OSS or VS Code
+
+前者开源，后者是微软基于开源项目二次开发的软件，可以类比 Chromium 与 Google Chrome
+
+安装 Code - OSS
+
+```
+sudo pacman -Syu code
+```
+
+或者 Visual Studio Code
+
+```
+yay -Syu visual-studio-code-bin
+```
+
+装好之后可以用 code 代替 nano 或 vim 等命令行编辑器进行文本编辑
+
+可以修改 git 的默认编辑器为 code
+
+```
+git config --global core.editor "code --wait"
+```
+
+
+
+### zsh 与 oh-my-zsh
+
+zsh 比系统默认搭载的 bash 更好用，搭配上社区支持的项目 oh-my-zsh，极大程度提升生产力
+
+```
+yay -Syu zsh oh-my-zsh-git
+```
+
+根据安装后提示配置好 oh-my-zsh
+
+切换默认 shell 为 zsh
+
+```
+sudo chsh -s /bin/zsh username
+```
+
+reboot 后再次打开终端，或直接运行 zsh，就能看到带颜色的默认 robbyrussell 主题 zsh 了
+
+编辑 `~/.zshrc`，找到 plugins 行，加入我推荐的几个插件
+
+```
+code ~/.zshrc
+```
+
+```
+plugins=(git z sudo zsh-syntax-highlighting zsh-autosuggestions)
+```
+
+其中 [zsh-syntax-highlighting](https://github.com/zsh-users/zsh-syntax-highlighting/blob/master/INSTALL.md#oh-my-zsh) 与 [zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions/blob/master/INSTALL.md#oh-my-zsh) 需要自行安装
+
+或者可以看这个 [gist](https://gist.github.com/dogrocker/1efb8fd9427779c827058f873b94df95)
+
+接着在 `.zshrc` 中粘贴上文代理中的三行终端命令，zsh 每次启动都会读取 `.zshrc` 初始化，即可自动化配置终端代理
+
+
+
+### 中文字体与中文输入法
+
+在系统语言设置内加入中文，安装中文字体与中文输入法后重启即可
+
+```
+yay -Syu noto-fonts-cjk noto-fonts-emoji
+```
+
+搜狗也可以换成 [其他你喜欢的输入法](https://wiki.archlinux.org/title/fcitx#Chinese)
+
+```
+yay -Syu fcitx fcitx-im fcitx-configtool fcitx-sogoupinyin
+```
+
+修改 `/etc/profile` 文件，在文件开头加入三行：
+
+```
+export XMODIFIERS="@im=fcitx"
+export GTK_IM_MODULE="fcitx"
+export QT_IM_MODULE="fcitx"
+```
+
+可以解决一些软件无法调出 `fcitx` 的问题
+
+
+
+### 蓝牙配置
+
+参照 [Arch wiki](https://wiki.archlinux.org/title/Bluetooth#Installation)
+
+```
+yay -Syu bluez bluez-utils blueman
+```
+
+```
+systemctl start bluetooth.service && systemctl enable bluetooth.service
+```
+
+
+
+### 浏览器
+
+没什么好说的，~~但我喜欢用 Edge~~
+
+```
+yay -Syu google-chrome-dev
+```
+
+```
+yay -Syu microsoft-edge-dev-bin
+```
+
+```
+yay -Syu chromium
+```
+
+ 
+
+### QQ 和微信
+
+使用 yay 安装 AUR 包即可
+
+[deepin-wine-qq](https://github.com/vufa/deepin-wine-qq-arch)
+
+[deepin-wine-wechat](https://github.com/vufa/deepin-wine-wechat-arch)
