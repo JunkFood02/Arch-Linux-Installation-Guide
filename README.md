@@ -261,7 +261,7 @@ fdisk -l
 > 再次提示：单次或多次按下 `Tab` 可以补全或选择可能的选项，免去输入校对之苦。
 > 部分电脑蜂鸣器会在 `Tab` 无法补全时发出刺耳的提示声，使用 `rmmod pcspkr` 移除。
 
-格式化刚刚在新建的 **数据分区（替换为你自己的路径）**
+格式化刚刚新建的 **数据分区（替换为你自己的路径）**
 
 ```shell
 mkfs.ext4 /dev/nvme0n1p5
@@ -423,7 +423,7 @@ reflector --country China --sort rate --latest 5 --save /etc/pacman.d/mirrorlist
 pacman -S dialog wpa_supplicant ntfs-3g networkmanager netctl git
 ```
 
-遇到需要选择的场合一路回车选择默认项即可。clash for windows
+遇到需要选择的场合一路回车选择默认项即可。
 
 
 
@@ -672,6 +672,10 @@ reboot，进入图形界面
 
 ## 安装后配置与提示
 
+这里的内容根据本人习惯配置进行，时不时更新一下，方便存档
+
+
+
 ### 社区支持
 
 Arch Linux 有完善的 Wiki 与活跃的社区支持，有任何问题先在 Wiki 内查找以及 Google 一下， 绝大部分问题都会找到解决方案
@@ -696,18 +700,6 @@ sudo pacman -Syu package-name
 
 
 
-### AUR helper: yay
-
-Arch Linux 除了官方源之外，还拥有广大社区用户维护的 **Arch 用户软件仓库**（Arch User Repository，简称 AUR）可供使用，极大丰富了 Arch Linux 的软件库，用户体验++
-
-安装可以让我们便捷安装 AUR 包的 `yay`
-
-```
-sudo pacman -Syu yay
-```
-
-
-
 ### 代理配置
 
 如果你使用 clash 进行国际联网，可以直接下载方便使用的 [Clash for Windows](https://github.com/Fndroid/clash_for_windows_pkg)，解压后打开 `cfw` 即可
@@ -727,6 +719,21 @@ sudo pacman -Syu yay
   export http_proxy=http://127.0.0.1:7890;
   export all_proxy=socks5://127.0.0.1:7890
   ```
+
+
+
+### AUR helper: yay
+
+Arch Linux 除了官方源之外，还拥有广大社区用户维护的 **Arch 用户软件仓库**（Arch User Repository，简称 AUR）可供使用，极大丰富了 Arch Linux 的软件库，用户体验++
+
+安装可以让我们便捷安装 AUR 包的 `yay`
+
+```
+pacman -S --needed git base-devel
+git clone https://aur.archlinux.org/yay.git
+cd yay
+makepkg -si
+```
 
 
 
@@ -764,7 +771,7 @@ zsh 比系统默认搭载的 bash 更好用，搭配上社区支持的项目 oh-
 yay -Syu zsh oh-my-zsh-git
 ```
 
-根据安装后提示配置好 oh-my-zsh
+根据安装后提示替换默认的 `.zshrc`，配置好 oh-my-zsh
 
 切换默认 shell 为 zsh
 
@@ -837,7 +844,7 @@ systemctl start bluetooth.service && systemctl enable bluetooth.service
 没什么好说的，~~但我喜欢用 Edge~~
 
 ```
-yay -Syu google-chrome-dev
+yay -Syu google-chrome
 ```
 
 ```
