@@ -532,7 +532,7 @@ pacman -S sudo
 vim /etc/sudoers
 ```
 
-找到 `# %wheel ALL=(ALL)ALL`，取消注释并保存退出。
+找到 `# %wheel ALL=(ALL:ALL) ALL`，取消注释并保存退出。
 
 > 或许有的人已经发现 Arch Wiki 和一些其他教程资料中的命令是以 `#` 或 `$` 开头的，这两个符号就对应着命令行中的命令提示符，`#` 代表以 `Root` 用户执行命令，`$` 代表以普通用户执行命令，平时使用教程中的命令时应该注意这一点。
 >
@@ -807,18 +807,22 @@ plugins=(git z sudo zsh-syntax-highlighting zsh-autosuggestions)
 yay -Syu noto-fonts-cjk noto-fonts-emoji
 ```
 
-搜狗也可以换成 [其他你喜欢的输入法](https://wiki.archlinux.org/title/fcitx#Chinese)
+可以使用 fcitx4 的搜狗输入法，或在 fcitx5 的拼音输入法中导入搜狗词库，参照 [fcitx](https://wiki.archlinux.org/title/fcitx#Chinese) 与 [fcitx5](https://wiki.archlinux.org/title/fcitx5#Chinese)
+
+安装 fcitx5 及组件，在设置中添加输入法即可，具体参照 Arch Wiki
+```
+yay -Syu fcitx5-im fcitx-chinese-addons fcitx5-qt fcitx5-gtk
+```
+
+修改 `/etc/environment` 文件，在文件开头加入五行：
 
 ```
-yay -Syu fcitx fcitx-im fcitx-configtool fcitx-sogoupinyin
-```
-
-修改 `/etc/profile` 文件，在文件开头加入三行：
-
-```
-export XMODIFIERS="@im=fcitx"
-export GTK_IM_MODULE="fcitx"
-export QT_IM_MODULE="fcitx"
+GTK_IM_MODULE=fcitx
+QT_IM_MODULE=fcitx
+XMODIFIERS=@im=fcitx
+INPUT_METHOD=fcitx
+SDL_IM_MODULE=fcitx
+GLFW_IM_MODULE=ibus
 ```
 
 可以解决一些软件无法调出 `fcitx` 的问题
