@@ -704,6 +704,14 @@ sudo pacman -Syu package-name
 
 如果你使用 clash 进行国际联网，可以直接下载方便使用的 [Clash for Windows](https://github.com/Fndroid/clash_for_windows_pkg)，解压后打开 `cfw` 即可
 
+若提示依赖缺失，可以安装 gtk3，[参考](https://aur.archlinux.org/packages/clash-for-windows-bin)
+
+```
+sudo pacman -Syu gtk3
+```
+
+
+
 - 在 `System Settings` 中搜索 `proxy`，手动将代理地址设置为 `127.0.0.1`，cfw 默认端口为 `7890`
 
 - 设置 `Git` 代理：
@@ -811,7 +819,7 @@ yay -Syu noto-fonts-cjk noto-fonts-emoji
 
 安装 fcitx5 及组件，在设置中添加输入法即可，具体参照 Arch Wiki
 ```
-yay -Syu fcitx5-im fcitx-chinese-addons fcitx5-qt fcitx5-gtk
+yay -Syu fcitx5-im fcitx5-chinese-addons fcitx5-qt fcitx5-gtk
 ```
 
 修改 `/etc/environment` 文件，在文件开头加入五行：
