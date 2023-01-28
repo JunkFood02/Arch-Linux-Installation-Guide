@@ -10,12 +10,12 @@
 
 ## 安装前准备
 
-1. 大于 60G 的硬盘空余空间。
+1. 大于 100G 的硬盘空余空间。
 2. 一块储存空间至少 4G 的 U 盘。
 3. 稳定，而不需要额外进行设备认证的有线/无线网络连接，如手机热点等。
 4. 至少 3 小时~~或长达数星期~~的时间。
 5. 基本的搜索引擎使用能力以及英语阅读能力。
-5. 折腾精神，以及一颗面对多次系统崩溃而不会随之崩溃的强大的心
+5. ~~够闲~~
 
 
 
@@ -38,7 +38,7 @@
 此处默认 Arch Linux 与原系统安装在同一块硬盘上，如果你需要在一块新硬盘上安装，你还需要确定或转换新硬盘的分区表为 GPT 格式，并新建一个 EFI 分区。具体的其他情况请查阅 Arch Wiki、[教程](https://www.viseator.com/2017/05/17/arch_install/) 或自行搜索。
 
 1. 使用 Windows 自带的磁盘管理，你可以直接在开始菜单中搜索找到它，或者右键单击计算机，选择管理。
-2. **压缩** 有空余空间的磁盘分区，分配一块空间给 Arch Linux，越多越好，最小不要小于 60G。
+2. **压缩** 有空余空间的磁盘分区，分配一块空间给 Arch Linux，越多越好，最小不要小于 60G。~~（我分了一整块硬盘）~~
 3. **不要** 在这里新建一个新分区，而是在进入 Arch Linux 安装程序后再进行这一步。
 
 
@@ -641,6 +641,10 @@ vim /etc/fstab
 pacman -S xorg
 ```
 
+初次安装一般在 KDE 与 Gnome 之间选择
+
+### KDE Plasma
+
 安装 KDE Plasma
 
 ```
@@ -658,6 +662,22 @@ pacman -S sddm
 ```
 systemctl enable sddm
 ```
+
+### GNOME
+
+安装 GNOME
+
+```
+pacman -S gnome
+```
+
+设置 gdm 开机启动
+
+```
+systemctl enable gdm
+```
+
+
 
 启用适用于桌面环境的网络服务 `NetworkManager`
 
@@ -781,7 +801,7 @@ yay -Syu zsh oh-my-zsh-git
 
 根据安装后提示替换默认的 `.zshrc`，配置好 oh-my-zsh
 
-切换默认 shell 为 zsh
+- 切换默认 shell 为 zsh
 
 ```
 sudo chsh -s /bin/zsh username
@@ -789,7 +809,7 @@ sudo chsh -s /bin/zsh username
 
 reboot 后再次打开终端，或直接运行 zsh，就能看到带颜色的默认 robbyrussell 主题 zsh 了
 
-编辑 `~/.zshrc`，找到 plugins 行，加入我推荐的几个插件
+- 编辑 `~/.zshrc`，找到 plugins 行，加入我推荐的几个插件
 
 ```
 code ~/.zshrc
@@ -799,11 +819,21 @@ code ~/.zshrc
 plugins=(git z sudo zsh-syntax-highlighting zsh-autosuggestions)
 ```
 
-其中 [zsh-syntax-highlighting](https://github.com/zsh-users/zsh-syntax-highlighting/blob/master/INSTALL.md#oh-my-zsh) 与 [zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions/blob/master/INSTALL.md#oh-my-zsh) 需要自行安装
-
-或者可以看这个 [gist](https://gist.github.com/dogrocker/1efb8fd9427779c827058f873b94df95)
+其中 [zsh-syntax-highlighting](https://github.com/zsh-users/zsh-syntax-highlighting/blob/master/INSTALL.md#oh-my-zsh) 与 [zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions/blob/master/INSTALL.md#oh-my-zsh) 需要自行安装，或者可以看这个 [gist](https://gist.github.com/dogrocker/1efb8fd9427779c827058f873b94df95)
 
 接着在 `.zshrc` 中粘贴上文代理中的三行终端命令，zsh 每次启动都会读取 `.zshrc` 初始化，即可自动化配置终端代理
+
+
+
+### Git
+
+随手配配能用就行
+
+- 代理和配置编辑器在前面提到了
+
+- [git-credential-manager](https://github.com/GitCredentialManager/git-credential-manager)：AUR 下一个，存 GitHub HTTPS 密钥用
+
+- 给 commit 整一下 [GPG 签名](https://docs.github.com/en/authentication/managing-commit-signature-verification/about-commit-signature-verification)
 
 
 
@@ -873,6 +903,14 @@ yay -Syu chromium
 
 使用 yay 安装 AUR 包即可
 
-[deepin-wine-qq](https://github.com/vufa/deepin-wine-qq-arch)
+linuxqq
 
 [deepin-wine-wechat](https://github.com/vufa/deepin-wine-wechat-arch)
+
+
+
+### Grub 引导炸了
+
+~~小心 Windows~~
+
+插入写入有 Arch Linux 安装介质的 U 盘，联网后先 mount `/` 与 `/boot`， 之后 `arch-chroot` 到 `/mnt` 进行抢救，先跳至 **配置系统引导** 的 **部署 grub** 环节照做，重启之后若仍未进入系统可以尝试重装一下内核（`pacman -S linux`），再尝试重新生成 grub 引导
