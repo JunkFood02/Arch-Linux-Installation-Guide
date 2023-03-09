@@ -33,15 +33,15 @@
 
 ### 磁盘分区
 
+> **Warning**
+>
 > 重要提示：如果你的 Windows 电脑为磁盘加上了 **Bitlocker 锁**，请务必解除后再进行任何磁盘操作，否则会为你带来巨大的不幸。
 
 此处默认 Arch Linux 与原系统安装在同一块硬盘上，如果你需要在一块新硬盘上安装，你还需要确定或转换新硬盘的分区表为 GPT 格式，并新建一个 EFI 分区。具体的其他情况请查阅 Arch Wiki、[教程](https://www.viseator.com/2017/05/17/arch_install/) 或自行搜索。
 
 1. 使用 Windows 自带的磁盘管理，你可以直接在开始菜单中搜索找到它，或者右键单击计算机，选择管理。
-2. **压缩** 有空余空间的磁盘分区，分配一块空间给 Arch Linux，越多越好，最小不要小于 60G。~~（我分了一整块硬盘）~~
+2. **压缩** 有空余空间的磁盘分区，分配一块空间给 Arch Linux，多多益善，最小不要小于 60G，如果你要使用 Arch Linux 作为你的主要开发环境，此分区建议不要小于 200G。~~（我分了一整块硬盘）~~
 3. **不要** 在这里新建一个新分区，而是在进入 Arch Linux 安装程序后再进行这一步。
-
-
 
 
 
@@ -184,6 +184,8 @@ timedatectl set-ntp true
 
 ## 分区的格式化与挂载
 
+> **Warning**
+>
 > 警告：除非你清楚你自己在做什么，否则请不要对硬盘分区表、以及除自己新建的分区之外的分区进行任何操作，并且请多次检查自己有没有输错命令，以防对其他分区的数据产生影响。
 >
 > 换而言之，只要你不对其他分区（Windows 相关分区）进行任何操作，就不需要担心有任何数据丢失的风险。
@@ -194,7 +196,7 @@ timedatectl set-ntp true
 
 如果你在一块 **新硬盘** 上安装 Arch Linux，则需要为其新建一个 EFI 系统分区
 
-如果你在一块已经安装有 Windows 的硬盘上安装 Arch Linux，则 **跳过这一步**
+**如果你要在一块已经安装有 Windows 的硬盘上安装 Arch Linux，跳过这一步**
 
 
 
@@ -290,11 +292,9 @@ mount
 
 
 
-
-
 ## 配置包管理器与安装基本包
 
-Arch Linux 的包管理器 `pacman` 十分强大，大部分情况下，一行命令就可以搞定包与依赖的问题。
+Arch Linux 的包管理器 `pacman` 十分强大，大部分情况下，一行命令就可以搞定软件包及其依赖。
 
 运行命令以配置 `pacman` 所使用的镜像源，`Reflector` 会自动帮我们配置位于 China 的下载速度最快的镜像源
 
@@ -303,8 +303,6 @@ reflector --country China --sort rate --latest 5 --save /etc/pacman.d/mirrorlist
 ```
 
 可能会报 `WARNING` 但无需理会
-
-
 
 
 
@@ -389,7 +387,7 @@ rm -rf /mnt/etc/fstab
 arch-chroot /mnt
 ```
 
-顺带一提，如果以后系统出现了问题，只要插入任意一个安装有 Arch Linux 镜像的 U 盘并启动，将我们的系统根分区挂载到 `/mnt` 下、EFI 系统分区挂载到 `/mnt/boot` 下，再通过这条命令就可以进入我们的系统进行修复操作。
+顺带一提，如果以后系统出现了问题，只要插入任意一个安装有 Arch Linux 镜像的 U 盘并启动，将我们的系统根分区挂载到 `/mnt` 下、EFI 系统分区挂载到 `/mnt/boot` 下，再通过这条命令就可以进入我们的系统进行修复操作。~~（用 Arch 的人身边都应该常备一个急救 U 盘）~~
 
 
 
@@ -560,6 +558,16 @@ pacman -S amd-ucode
 pacman -S os-prober ntfs-3g grub efibootmgr
 ```
 
+启用 `os-prober`：编辑 grub 设置，取消注释下述设置项
+
+```
+vim /etc/default/grub
+```
+
+```
+# GRUB_DISABLE_OS_PROBER=false
+```
+
 部署 `grub`
 
 ```
@@ -577,6 +585,8 @@ grub-mkconfig -o /boot/grub/grub.cfg
 ```
 vim /boot/grub/grub.cfg
 ```
+
+
 
 若有任何报错请查阅 Arch Wiki、教程或自行搜索
 
@@ -635,6 +645,8 @@ vim /etc/fstab
 > 遇到需要选择的场合一路回车选择默认项即可
 >
 
+
+
 安装 Xorg 图形服务
 
 ```
@@ -642,6 +654,8 @@ pacman -S xorg
 ```
 
 初次安装一般在 KDE 与 Gnome 之间选择
+
+
 
 ### KDE Plasma
 
@@ -663,12 +677,14 @@ pacman -S sddm
 systemctl enable sddm
 ```
 
+
+
 ### GNOME
 
 安装 GNOME
 
 ```
-pacman -S gnome
+pacman -S gnome gdm
 ```
 
 设置 gdm 开机启动
@@ -678,6 +694,8 @@ systemctl enable gdm
 ```
 
 
+
+### 网络服务
 
 启用适用于桌面环境的网络服务 `NetworkManager`
 
@@ -793,7 +811,7 @@ git config --global core.editor "code --wait"
 
 ### zsh 与 oh-my-zsh
 
-zsh 比系统默认搭载的 bash 更好用，搭配上社区支持的项目 oh-my-zsh，极大程度提升生产力
+zsh 比系统默认搭载的 bash 更好用，搭配上社区支持的项目 oh-my-zsh，插件和主题都很齐全
 
 ```
 yay -Syu zsh oh-my-zsh-git
@@ -913,4 +931,4 @@ linuxqq
 
 ~~小心 Windows~~
 
-插入写入有 Arch Linux 安装介质的 U 盘，联网后先 mount `/` 与 `/boot`， 之后 `arch-chroot` 到 `/mnt` 进行抢救，先跳至 **配置系统引导** 的 **部署 grub** 环节照做，重启之后若仍未进入系统可以尝试重装一下内核（`pacman -S linux`），再尝试重新生成 grub 引导
+插入写入有 Arch Linux 安装介质的 U 盘，联网后先 mount `/` 与 `/boot`（参考 **挂载分区** 一节）， 之后 `arch-chroot` 到 `/mnt` 进行抢救，先重装一下内核（`pacman -S linux`）这一步会自动为你重新生成 `initramfs` 镜像，然后跳至 **配置系统引导** 的 **部署 grub** 环节照做。
