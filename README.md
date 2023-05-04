@@ -811,13 +811,15 @@ git config --global core.editor "code --wait"
 
 ### zsh 与 oh-my-zsh
 
-zsh 比系统默认搭载的 bash 更好用，搭配上社区支持的项目 oh-my-zsh，插件和主题都很齐全
+zsh 比系统默认搭载的 bash 更好用，搭配上社区支持的项目 [oh-my-zsh](https://ohmyz.sh/)，插件和主题都很齐全
 
 ```
-yay -Syu zsh oh-my-zsh-git
+yay -Syu zsh
 ```
 
-根据安装后提示替换默认的 `.zshrc`，配置好 oh-my-zsh
+```
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+```
 
 - 切换默认 shell 为 zsh
 
