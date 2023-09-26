@@ -190,7 +190,9 @@ timedatectl set-ntp true
 
 如果你在一块 **新硬盘** 上安装 Arch Linux，则需要为其新建一个 EFI 系统分区
 
-**如果你要在一块已经安装有 Windows 的硬盘上安装 Arch Linux，跳过这一步**
+> **Note**
+>
+> **如果你要在一块已经安装有 Windows 的硬盘上安装 Arch Linux，跳过这一步**
 
 
 
@@ -357,7 +359,7 @@ cat /mnt/etc/fstab
 如果 `fstab` 文件有任何错误，请先删除该文件
 
 ```
-rm -rf /mnt/etc/fstab
+rm /mnt/etc/fstab
 ```
 
 检查前面的挂载操作有没有出错，`umount` 之后再重新挂载、生成。
@@ -639,8 +641,6 @@ vim /etc/fstab
 > 遇到需要选择的场合一路回车选择默认项即可
 >
 
-
-
 安装 Xorg 图形服务
 
 ```
@@ -648,8 +648,6 @@ pacman -S xorg
 ```
 
 初次安装一般在 KDE 与 Gnome 之间选择
-
-
 
 ### KDE Plasma
 
@@ -698,7 +696,7 @@ systemctl disable netctl
 systemctl enable NetworkManager
 ```
 
-reboot，进入图形界面
+`reboot`，进入图形界面
 
 
 
@@ -866,7 +864,7 @@ yay -Syu noto-fonts-cjk noto-fonts-emoji
 yay -Syu fcitx5-im fcitx5-chinese-addons fcitx5-qt fcitx5-gtk
 ```
 
-修改 `/etc/environment` 文件，在文件开头加入五行：
+修改 `/etc/environment` 文件，在文件开头加入如下内容：
 
 ```
 GTK_IM_MODULE=fcitx
