@@ -76,9 +76,9 @@
 
 
 
-### 连接有线网络
+### 连接有线网络 
 
-不同型号的无线网卡的支持情况不同，若有条件推荐优先使用有线网网络进行连接，可以直接使用 USB 线将手机连接电脑使用手机的数据网络。
+不同型号的无线网卡的支持情况不同，若有条件**推荐优先使用**有线网网络进行连接，可以直接使用 USB 线将手机连接电脑使用手机的数据网络。
 
 接入网线或手机进行有线网连接，并测试网络是否联通
 
@@ -193,6 +193,7 @@ timedatectl set-ntp true
 > **Note**
 >
 > **如果你要在一块已经安装有 Windows 的硬盘上安装 Arch Linux，跳过这一步**
+
 
 
 
@@ -530,6 +531,7 @@ vim /etc/sudoers
 
 > 或许有的人已经发现 Arch Wiki 和一些其他教程资料中的命令是以 `#` 或 `$` 开头的，这两个符号就对应着命令行中的命令提示符，`#` 代表以 `Root` 用户执行命令，`$` 代表以普通用户执行命令，平时使用教程中的命令时应该注意这一点。
 >
+> 提示权限不足时： `：wq!`
 
 
 
@@ -649,7 +651,7 @@ pacman -S xorg
 
 初次安装一般在 KDE 与 Gnome 之间选择
 
-### KDE Plasma
+### KDE Plasma ~~(建议用GNOME)~~
 
 安装 KDE Plasma
 
@@ -696,7 +698,7 @@ systemctl disable netctl
 systemctl enable NetworkManager
 ```
 
-`reboot`，进入图形界面
+`reboot`，再次进入图形界面
 
 
 
@@ -860,6 +862,10 @@ yay -Syu noto-fonts-cjk noto-fonts-emoji
 可以使用 fcitx4 的搜狗输入法，或在 fcitx5 的拼音输入法中导入搜狗词库，参照 [fcitx](https://wiki.archlinux.org/title/fcitx#Chinese) 与 [fcitx5](https://wiki.archlinux.org/title/fcitx5#Chinese)
 
 安装 fcitx5 及组件，在设置中添加输入法即可，具体参照 Arch Wiki
+
+> 记得在 fcitx5 configuration 添加中文输入
+>
+
 ```
 yay -Syu fcitx5-im fcitx5-chinese-addons fcitx5-qt fcitx5-gtk
 ```
