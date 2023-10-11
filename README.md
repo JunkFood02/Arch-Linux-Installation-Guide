@@ -864,6 +864,8 @@ yay -Syu noto-fonts-cjk noto-fonts-emoji
 安装 fcitx5 及组件，在设置中添加输入法即可，具体参照 Arch Wiki
 
 > 记得在 fcitx5 configuration 添加中文输入
+>
+
 ```
 yay -Syu fcitx5-im fcitx5-chinese-addons fcitx5-qt fcitx5-gtk
 ```
