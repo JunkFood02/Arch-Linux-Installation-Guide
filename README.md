@@ -186,13 +186,17 @@ timedatectl set-ntp true
 
 
 
+### 使用已有的 EFI 系统分区
+
+如果你在一个 **已经安装有 Windows 的硬盘** 上安装 Arch Linux，你并不需要对已存在的分区进行任何操作，请直接跳至 **新建数据分区**
+
+
+
 ### 新建 EFI 系统分区
 
-如果你在一块 **新硬盘** 上安装 Arch Linux，则需要为其新建一个 EFI 系统分区
+如果你在一块 **新硬盘** 上安装 Arch Linux，则需要为其新建一个 EFI 系统分区；
 
-> **Note**
->
-> **如果你要在一块已经安装有 Windows 的硬盘上安装 Arch Linux，跳过这一步**
+如果你要在一块已经安装有 Windows 的硬盘上安装 Arch Linux，**跳过这一步**
 
 
 
@@ -202,7 +206,7 @@ timedatectl set-ntp true
 fdisk -l
 ```
 
-选择进入即将安装 Arch Linux 的硬盘，形如 `/dev/nvme0n1`（请以自己的设备情况为准）
+选择进入即将安装 Arch Linux 的 **新硬盘**，形如 `/dev/nvme0n1`（请以自己的设备情况为准）
 
 ```
 fdisk /dev/nvme0n1
@@ -286,6 +290,17 @@ mount /dev/nvme0n1p1 /mnt/boot
 mount
 ```
 
+根目录挂载点 `/mnt` 应当被挂载到 ext4 文件系统的数据分区
+
+启动目录挂载点 `/mnt/boot` 应当被挂载到 vfat 文件系统的 EFI 系统分区
+
+如有操作失误，请取消挂载后重新检查进行挂载
+
+```
+umount /mnt/boot
+umount /mnt
+```
+
 
 
 ## 配置包管理器与安装基本包
@@ -330,7 +345,9 @@ vim /etc/pacman.conf
 pacstrap /mnt base base-devel linux linux-firmware dhcpcd vim reflector
 ```
 
-遇到需要选择的场合一路回车选择默认项即可。
+遇到需要选择的场合一路回车选择默认项即可
+
+请重点观察此步是否输出错误（警告可忽略）
 
 
 
@@ -647,29 +664,7 @@ vim /etc/fstab
 pacman -S xorg
 ```
 
-初次安装一般在 KDE 与 Gnome 之间选择
-
-### KDE Plasma
-
-安装 KDE Plasma
-
-```
-pacman -S plasma kde-applications
-```
-
-安装桌面管理器 sddm
-
-```
-pacman -S sddm
-```
-
-设置 sddm 开机启动
-
-```
-systemctl enable sddm
-```
-
-
+初次安装一般在 [KDE Plasma](https://kde.org/plasma-desktop/) 与 [GNOME](https://www.gnome.org/) 两种图形界面中选择其一，选择你认为好看的即可，日后可以方便地进行卸载替换
 
 ### GNOME
 
@@ -683,6 +678,20 @@ pacman -S gnome gdm
 
 ```
 systemctl enable gdm
+```
+
+### KDE Plasma
+
+安装 KDE Plasma 与 桌面管理器 sddm
+
+```
+pacman -S plasma kde-applications sddm
+```
+
+设置 sddm 开机启动
+
+```
+systemctl enable sddm
 ```
 
 
@@ -859,7 +868,7 @@ yay -Syu noto-fonts-cjk noto-fonts-emoji
 
 可以使用 fcitx4 的搜狗输入法，或在 fcitx5 的拼音输入法中导入搜狗词库，参照 [fcitx](https://wiki.archlinux.org/title/fcitx#Chinese) 与 [fcitx5](https://wiki.archlinux.org/title/fcitx5#Chinese)
 
-安装 fcitx5 及组件，在设置中添加输入法即可，具体参照 Arch Wiki
+安装 fcitx5 及组件，自行在应用列表中打开 Fcitx5 Configuation 图形化界面工具，添加中英文输入法后即可使用，具体参照 Arch Wiki
 ```
 yay -Syu fcitx5-im fcitx5-chinese-addons fcitx5-qt fcitx5-gtk
 ```
@@ -911,13 +920,15 @@ yay -Syu chromium
 
  
 
-### QQ 和微信
+### QQ、微信与飞书
 
 使用 yay 安装 AUR 包即可
 
-linuxqq
+[linuxqq](https://aur.archlinux.org/packages/linuxqq)
 
 [deepin-wine-wechat](https://github.com/vufa/deepin-wine-wechat-arch)
+
+[feishu-bin](https://aur.archlinux.org/packages/feishu-bin)
 
 
 
@@ -926,3 +937,11 @@ linuxqq
 ~~小心 Windows~~
 
 插入写入有 Arch Linux 安装介质的 U 盘，联网后先 mount `/` 与 `/boot`（参考 **挂载分区** 一节）， 之后 `arch-chroot` 到 `/mnt` 进行抢救，先重装一下内核（`pacman -S linux`）这一步会自动为你重新生成 `initramfs` 镜像，然后跳至 **配置系统引导** 的 **部署 grub** 环节照做。
+
+
+
+### Windows 引导炸了
+
+如果你不经意间将 Windows 所在的 EFI 分区格式化/擦除掉了，你将无法正常引导进入 Windows，我们需要像制作一张 Arch Linux 安装镜像一样，制作一张 Windows 启动盘，然后进入命令行，根据 C 盘中的 Windows 系统文件进行引导重建。
+
+[Restoring an accidentally deleted EFI system partition](https://wiki.archlinux.org/title/Dual_boot_with_Windows#Restoring_an_accidentally_deleted_EFI_system_partition)
