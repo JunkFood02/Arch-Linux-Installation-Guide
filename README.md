@@ -711,7 +711,26 @@ systemctl enable NetworkManager
 
 ## 安装后配置与提示
 
-这里的内容根据本人习惯配置进行，时不时更新一下，方便存档
+这里的内容根据本人习惯配置进行，时不时更新一下，方便炸系统之后重装
+
+
+
+### 给新手的提示
+
+如果你是第一次安装 Arch Linux，恭喜你，你已经走完了整个安装教程的一半！请你坐和放宽，打开系统自带的默认网页浏览器，在本机查看此教程，方便你进行命令的复制粘贴
+
+如果你不习惯使用自带的毛坯房浏览器，可以安装 Chromium
+
+```
+sudo pacman -S chromium
+```
+
+如果你发现中文等 Unicode 字符显示为小方块，请安装中文字体后重启
+
+```
+sudo pacman -S noto-fonts-cjk
+reboot
+```
 
 
 
@@ -859,6 +878,8 @@ plugins=(git z sudo zsh-syntax-highlighting zsh-autosuggestions)
 
 
 ### 中文字体与中文输入法
+
+参照：[简体中文本地化 - Arch Linux 中文维基](https://wiki.archlinuxcn.org/wiki/%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87%E6%9C%AC%E5%9C%B0%E5%8C%96)
 
 在系统语言设置内加入中文，安装中文字体与中文输入法后重启即可
 
