@@ -717,7 +717,9 @@ systemctl enable NetworkManager
 
 ### 给新手的提示
 
-如果你是第一次安装 Arch Linux，恭喜你，你已经走完了整个安装教程的一半！请你坐和放宽，打开系统自带的默认网页浏览器，在本机查看此教程，方便你进行命令的复制粘贴
+**如果你是第一次安装 Arch Linux，恭喜你，你已经走完了整个安装教程的一半！🎉**
+
+请你坐和放宽，打开系统自带的默认网页浏览器，在本机查看此教程，方便你进行命令的复制粘贴
 
 如果你不习惯使用自带的毛坯房浏览器，可以安装 Chromium
 
@@ -760,17 +762,17 @@ sudo pacman -Syu package-name
 
 ### 代理配置
 
-如果你使用 clash 进行国际联网，可以直接下载方便使用的 [Clash for Windows](https://github.com/Fndroid/clash_for_windows_pkg)，解压后打开 `cfw` 即可
+如果你使用 clash 进行国际联网，可以直接下载 [Clash Verge](https://github.com/zzzgydi/clash-verge)，注意选择 amd64 架构版本，直接在命令行运行即可
 
-若提示依赖缺失，可以安装 gtk3，[参考](https://aur.archlinux.org/packages/clash-for-windows-bin)
+如果你已经处于国际联网的环境中，在完成了下一节的配置后，可以使用 yay 安装
 
 ```
-sudo pacman -Syu gtk3
+yay -Syu clash-verge
 ```
 
 
 
-- 在 `System Settings` 中搜索 `proxy`，手动将代理地址设置为 `127.0.0.1`，cfw 默认端口为 `7890`
+- 在 `System Settings` 中搜索 `proxy`，手动将代理地址设置为 `127.0.0.1`，Clash 默认端口为 `7890`
 
 - 设置 `Git` 代理：
 
@@ -792,7 +794,7 @@ sudo pacman -Syu gtk3
 
 Arch Linux 除了官方源之外，还拥有广大社区用户维护的 **Arch 用户软件仓库**（Arch User Repository，简称 AUR）可供使用，极大丰富了 Arch Linux 的软件库，用户体验++
 
-安装可以让我们便捷安装 AUR 包的 `yay`
+在与国际互联网联通的环境下，安装可以让我们便捷安装 AUR 包的 `yay`
 
 ```
 pacman -S --needed git base-devel
